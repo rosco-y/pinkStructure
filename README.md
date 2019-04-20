@@ -1,7 +1,7 @@
 # pinkStructure
 UNITY Skeleton Project of the PYNKIES Math Game
 ---
-## Why does this Project Exist?
+### Why does this Project Exist?
 
 I have been developing a math game for children, and I've kludged my way though some early problems I had with UNITY (complete beginner type stuff: Triggers and Colliders, Physics and making Objects move etc. etc.)
 
