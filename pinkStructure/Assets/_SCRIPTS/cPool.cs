@@ -4,46 +4,122 @@ using UnityEngine;
 
 public class cPool : MonoBehaviour
 {
+    #region USING DICTIONARY OF POOLS
 
-    #region PUBLIC MEMBERS
+    Dictionary<int, Queue<GameObject>> _poolDictionary = new Dictionary<int, Queue<GameObject>>();
 
-    public GameObject _preFab;
-
-    #endregion
-
-    #region PRIVATE MEMBERS
+    // singleton pattern:
 
     public static cPool Instance { get; private set; }
 
-    Queue<GameObject> poolObjects = new Queue<GameObject>();
-
-    #endregion
     private void Awake()
     {
         Instance = this;
     }
 
-    public GameObject Get()
+    //public static cPool Instance
+    //{
+    //    get
+    //    {
+    //        return _instance;
+    //    }
+    //}
+
+
+    /// <summary>
+    /// Create a pool for our prefabs.
+    /// </summary>
+    /// <param name="prefab">
+    /// The prefab that needs to be used and reused in our pool.
+    /// </param>
+    /// <param name="poolsize">
+    /// The size of our initial pool.
+    /// </param>
+    public void AddToPool(GameObject prefab, int poolsize)
     {
-        if (poolObjects.Count == 0)
+        //test to see if particular dictionary already exists.
+        int poolKey = prefab.GetInstanceID();
+        if (!_poolDictionary.ContainsKey(poolKey))
         {
-            AddShots(1);
+            // add dictionary if it doesn't.
+            _poolDictionary.Add(poolKey, new Queue<GameObject>());
         }
-        return poolObjects.Dequeue();
+        for (int i = 0; i < poolsize; i++)
+        {
+            GameObject newObject = Instantiate(prefab);
+            newObject.SetActive(false);
+            _poolDictionary[poolKey].Enqueue(newObject);
+        }
     }
 
-    void AddShots(int count)
+    /// <summary>
+    /// Reuse an object in a pool.  Note that as it is immediately placed back in the pool,
+    /// even though it is activated.
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    public void RecycleObject(GameObject prefab, Vector3 position, Quaternion rotation)
     {
-        for (int i = 0; i < count; i++)
+        int poolKey = prefab.GetInstanceID();
+        if (_poolDictionary.ContainsKey(poolKey))
         {
-            GameObject obj = Instantiate(_preFab);
-            poolObjects.Enqueue(obj);
+            if (_poolDictionary[poolKey].Count == 0)
+            {
+                AddToPool(prefab, 1);
+            }
+            GameObject objectToReuse = _poolDictionary[poolKey].Dequeue();
+            _poolDictionary[poolKey].Enqueue(objectToReuse);
+
+            objectToReuse.transform.position = position;
+            objectToReuse.transform.rotation = rotation;
+            objectToReuse.SetActive(true);
         }
-    }    
-    
-    public void ReturnToPool(GameObject obj)
-    {
-        obj.SetActive(false);
-        poolObjects.Enqueue(obj);
     }
+    #endregion
+
+    #region DEFUNCT
+    //#region PUBLIC MEMBERS
+
+    //public T _preFab;
+
+    //#endregion
+
+    //#region PRIVATE MEMBERS
+
+    //public static cPool Instance { get; private set; }
+
+    //Queue<T> poolObjects = new Queue<T>();
+
+    //#endregion
+    //private void Awake()
+    //{
+    //    Instance = this;
+    //}
+
+    //public T Get()
+    //{
+    //    if (poolObjects.Count == 0)
+    //    {
+    //        AddShots(1);
+    //    }
+    //    return poolObjects.Dequeue();
+    //}
+
+    //void AddShots(int count)
+    //{
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        GameObject T = Instantiate(_preFab);
+    //        poolObjects.Enqueue(T);
+    //    }
+    //}    
+
+    //public void ReturnToPool(T obj)
+    //{
+    //    obj.SetActive(false);
+    //    poolObjects.Enqueue(obj);
+    //}
+
+    #endregion
 }

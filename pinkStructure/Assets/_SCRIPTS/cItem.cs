@@ -8,6 +8,8 @@ public class cItem : MonoBehaviour
     cPrice _price;
     private void Start()
     {
+        _price = new cPrice();
+
         print($"This item is initially priced at: {_price:C}");
     }
 }

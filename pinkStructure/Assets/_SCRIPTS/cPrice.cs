@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets._SCRIPTS
 {
-    class cPrice
+    class cPrice //: ScriptableObject ?
     {
         decimal _price;
         public cPrice()
